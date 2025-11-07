@@ -8,15 +8,15 @@ export class AppController {
 
   @Get()
   getHello(
-    @Req() req: Request,
     @Body() body: any,
     @Param() param: any,
-    @Query() { name, age }: any,
+    @Query() query: any,
+    @Req() req: Request,
   ): string {
     // console.log({ req });
     console.log({ body });
     console.log({ param });
-    console.log({ name, age });
+    console.log({ query });
 
     return this.appService.getHello();
   }

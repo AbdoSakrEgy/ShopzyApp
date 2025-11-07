@@ -1,34 +1,34 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseEnumPipe,
+  ParseIntPipe,
+  Query,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { registerDTO } from './dto/register.dto';
+import { CheckPassword } from 'src/common/pipes/checkPassword.pipe';
+import { Abdo } from 'src/common/pipes/abdo.pipe';
+import { registerSchema } from './validation/register.zod';
+import { ZodValidationPipe } from 'src/common/pipes/zod.pipe';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.authService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+  @Get('say-hello')
+  @UsePipes(new ZodValidationPipe(registerSchema))
+  sayHello(
+    @Body() body: registerDTO,
+    @Param() param: any,
+    @Query() query: any,
+  ) {
+    console.log({ body });
+    return this.authService.sayHello(body);
   }
 }
