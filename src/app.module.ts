@@ -1,10 +1,12 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
+import { AuthModule } from './modules/auth/auth.module';
+import { userSchema } from './DB/models/user.model';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
 @Module({
   imports: [
@@ -12,7 +14,7 @@ import { Connection } from 'mongoose';
       envFilePath: 'config/.env.dev',
     }),
     AuthModule,
-    MongooseModule.forRoot('mongodb://localhost:27017/shopzy', {
+    MongooseModule.forRoot(process.env.MONGOOSE_URI as string, {
       onConnectionCreate: (connection: Connection) => {
         connection.on('connected', () => console.log('DB connected'));
         connection.on('open', () => console.log('DB open'));
@@ -27,4 +29,8 @@ import { Connection } from 'mongoose';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('/auth/register');
+  }
+}
