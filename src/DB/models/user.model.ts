@@ -124,16 +124,14 @@ export class User implements IUser {
 }
 
 export const userSchema = SchemaFactory.createForClass(User);
-
 export type UserDocument = HydratedDocument<User>;
-
+export const UserModel = MongooseModule.forFeature([
+  { name: User.name, schema: userSchema },
+]);
+// hooks
 userSchema.pre('save', async function (next) {
   if (this.isModified('password')) {
     this.password = await hash(this.password);
   }
   next();
 });
-
-export const UserModel = MongooseModule.forFeature([
-  { name: User.name, schema: userSchema },
-]);

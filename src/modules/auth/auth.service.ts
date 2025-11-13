@@ -18,7 +18,6 @@ import { ResendOtpDto } from './dto/resendOtp.dto';
 import { ConfrimEmailDto } from './dto/confirmEmail.dto';
 import { compare } from 'src/common/utils/security/hash.utils';
 import { LoginDto } from './dto/login.dto';
-import { JwtService } from '@nestjs/jwt';
 import { createJwt } from 'src/common/utils/jwt';
 
 @Injectable()
@@ -26,7 +25,6 @@ export class AuthService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Otp.name) private readonly otpModel: Model<OtpDocument>,
-    private jwtService: JwtService,
   ) {}
   // =========================== register ===========================
   async register(body: RegisterDto) {
@@ -78,7 +76,7 @@ export class AuthService {
     );
     return {
       message: 'User created successfully',
-      results: { accessToken, refreshToken },
+      result: { accessToken, refreshToken },
     };
   }
 
@@ -187,7 +185,13 @@ export class AuthService {
     );
     return {
       message: 'User loggedin successfully',
-      results: { accessToken, refreshToken },
+      result: { accessToken, refreshToken },
     };
+  }
+
+  // =========================== profile ===========================
+  profile(req: any) {
+    const user = req.user;
+    return { message: 'Done', result: { user } };
   }
 }

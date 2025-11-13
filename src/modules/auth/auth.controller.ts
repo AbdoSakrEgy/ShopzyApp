@@ -6,7 +6,11 @@ import {
   Param,
   Post,
   Query,
+  Req,
+  UploadedFile,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -18,6 +22,9 @@ import {
   confrimEmailSchema,
 } from './dto/confirmEmail.dto';
 import { type LoginDto, loginSchema } from './dto/login.dto';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from 'src/common/utils/multer/multer.options';
 
 @Controller('/auth')
 export class AuthController {
@@ -45,5 +52,23 @@ export class AuthController {
   @UsePipes(new ZodValidationPipe(loginSchema))
   async login(@Body() body: LoginDto) {
     return await this.authService.login(body);
+  }
+
+  @Get('/profile')
+  @UseGuards(AuthGuard)
+  profile(@Req() req: any) {
+    return this.authService.profile(req);
+  }
+
+  @Post('/upload-file')
+  @UseInterceptors(FileInterceptor('image', multerOptions()))
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return 'hello';
+  }
+
+  @Post('/upload-files')
+  @UseInterceptors(FilesInterceptor('images', 5, multerOptions()))
+  uploadFiles(@UploadedFiles() files: Express.Multer.File[]) {
+    return 'hello';
   }
 }

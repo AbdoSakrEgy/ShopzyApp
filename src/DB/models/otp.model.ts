@@ -35,19 +35,16 @@ export class Otp {
 }
 
 export const otpSchema = SchemaFactory.createForClass(Otp);
-
+export type OtpDocument = HydratedDocument<Otp>;
+export const OtpModel = MongooseModule.forFeature([
+  { name: Otp.name, schema: otpSchema },
+]);
 // TTL (Time-To-Live)
 otpSchema.index({ expiredAt: 1 }, { expireAfterSeconds: 0 });
-
-export type OtpDocument = HydratedDocument<Otp>;
-
+// hooks
 otpSchema.pre('save', async function (next) {
   if (this.isModified('code')) {
     this.code = await hash(this.code);
   }
   next();
 });
-
-export const OtpModel = MongooseModule.forFeature([
-  { name: Otp.name, schema: otpSchema },
-]);
