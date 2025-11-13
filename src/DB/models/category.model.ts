@@ -7,7 +7,7 @@ import { hash } from 'src/common/utils/security/hash.utils';
 @Schema({
   timestamps: true,
 })
-export class Brand {
+export class Category {
   @Prop({
     type: String,
     minlength: 3,
@@ -16,6 +16,13 @@ export class Brand {
     unique: true,
   })
   name: string;
+
+  @Prop({
+    type: String,
+    minlength: 3,
+    maxlength: 1000,
+  })
+  description: string;
 
   @Prop({
     type: String,
@@ -34,22 +41,27 @@ export class Brand {
     required: true,
   })
   image: string;
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Brand' }],
+  })
+  brand: Types.ObjectId[];
 }
 
-export const brandSchema = SchemaFactory.createForClass(Brand);
-export type BrandDocument = HydratedDocument<Brand>;
-export const BrandModel = MongooseModule.forFeature([
-  { name: Brand.name, schema: brandSchema },
+export const categorySchema = SchemaFactory.createForClass(Category);
+export type CategoryDocument = HydratedDocument<Category>;
+export const CategoryModel = MongooseModule.forFeature([
+  { name: Category.name, schema: categorySchema },
 ]);
 // hooks
-brandSchema.pre('save', function (next) {
+categorySchema.pre('save', function (next) {
   if (this.isModified('name')) {
     this.slug = slugify(this.name, { lower: true });
   }
   next();
 });
-brandSchema.pre('updateOne', function (next) {
-  const update = this.getUpdate() as UpdateQuery<Brand>;
+categorySchema.pre('updateOne', function (next) {
+  const update = this.getUpdate() as UpdateQuery<Category>;
   // handle both direct updates and $set
   const name: string = update?.name || update?.$set?.name;
   if (name) {

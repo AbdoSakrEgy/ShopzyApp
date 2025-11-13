@@ -8,6 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { userSchema } from './DB/models/user.model';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { BrandModule } from './modules/brand/brand.module';
+import { CategoryModule } from './modules/category/category.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { BrandModule } from './modules/brand/brand.module';
       },
     }),
     BrandModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

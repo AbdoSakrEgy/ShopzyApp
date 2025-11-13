@@ -16,16 +16,20 @@ export class BrandService {
   ) {}
 
   // =========================== create ===========================
-  async create(createBrandDto: CreateBrandDto) {
+  async create(parsedBody: CreateBrandDto, file: Express.Multer.File) {
+    const { name, createdBy } = parsedBody;
+    const image = file.filename;
     // step: check brand existence
-    const checkBrand = await this.brandModel.findOne({
-      name: createBrandDto.name,
-    });
+    const checkBrand = await this.brandModel.findOne({ name });
     if (checkBrand) {
       return new ConflictException('Brand already exist');
     }
     // step: create brand
-    const brand = await this.brandModel.create(createBrandDto);
+    const brand = await this.brandModel.create({
+      name,
+      createdBy,
+      image,
+    });
     return { message: 'Brand created successfully', result: brand };
   }
 
@@ -48,21 +52,35 @@ export class BrandService {
   }
 
   // =========================== update ===========================
-  async update(id: string, updateBrandDto: UpdateBrandDto) {
+  async update(
+    id: string,
+    parsedBody: UpdateBrandDto,
+    file: Express.Multer.File,
+  ) {
     // step: check brand existence
     const checkBrand = await this.brandModel.findById(id);
     if (!checkBrand) {
       return new ConflictException('Brand not exist');
     }
     // step: update brand
+    const updateData: any = { ...parsedBody };
+    if (file) {
+      updateData.image = file.filename;
+    }
     const updatedBrand = await this.brandModel.updateOne(
       { _id: id },
-      updateBrandDto,
+      { $set: updateData },
     );
     return { message: 'Brand updated successfully', result: updatedBrand };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} brand`;
+  // =========================== removeOne ===========================
+  async removeOne(id: string) {
+    const brand = await this.brandModel.findOne({ _id: id });
+    if (!brand) {
+      return new NotFoundException('Brand not found');
+    }
+    await this.brandModel.deleteOne({ _id: id });
+    return { message: 'Brand removed successfully' };
   }
 }

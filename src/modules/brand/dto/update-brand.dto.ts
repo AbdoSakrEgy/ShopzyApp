@@ -1,16 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateBrandDto } from './create-brand.dto';
-import { IsMongoId, IsString, Length } from 'class-validator';
-import { Types } from 'mongoose';
+import z from 'zod';
 
-export class UpdateBrandDto extends PartialType(CreateBrandDto) {
-  @IsString()
-  @Length(3, 10)
-  name?: string;
+export const updateBrandSchema = z.strictObject({
+  name: z.string().min(3).max(10).optional(),
+});
 
-  @IsString()
-  image?: string;
-
-  @IsMongoId()
-  createdBy?: Types.ObjectId;
-}
+export type UpdateBrandDto = z.infer<typeof updateBrandSchema>;

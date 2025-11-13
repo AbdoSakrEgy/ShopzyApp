@@ -1,14 +1,8 @@
-import { IsString, IsInt, Length, IsMongoId } from 'class-validator';
-import { Types } from 'mongoose';
+import z from 'zod';
 
-export class CreateBrandDto {
-  @IsString()
-  @Length(3, 10)
-  name: string;
+export const createBrandSchema = z.strictObject({
+  name: z.string().min(3).max(10),
+  createdBy: z.string(),
+});
 
-  @IsString()
-  image: string;
-
-  @IsMongoId()
-  createdBy: Types.ObjectId;
-}
+export type CreateBrandDto = z.infer<typeof createBrandSchema>;

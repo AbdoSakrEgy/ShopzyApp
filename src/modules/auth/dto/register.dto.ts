@@ -1,19 +1,3 @@
-// import { IsEmail, IsString, IsStrongPassword, Length } from 'class-validator';
-
-// export class RegisterDTO {
-//   @IsString()
-//   @Length(3, 10)
-//   userName: string;
-//   @IsString()
-//   @IsEmail()
-//   email: string;
-//   @IsString()
-//   // @IsStrongPassword()
-//   password: string;
-//   @IsString()
-//   confirmPassword: string;
-// }
-
 import { GenderEnum, ProviderEnum, RoleEnum } from 'src/common/types/user.type';
 import z from 'zod';
 
