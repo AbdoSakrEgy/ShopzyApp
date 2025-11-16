@@ -7,30 +7,16 @@ import { hash } from 'src/common/utils/security/hash.utils';
   timestamps: true,
 })
 export class Otp {
-  @Prop({
-    type: String,
-    required: true,
-  })
+  @Prop({ type: String, required: true })
   code: string;
 
-  @Prop({
-    type: Date,
-    required: true,
-  })
+  @Prop({ type: Date, required: true })
   expiredAt: Date;
 
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'User',
-  })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' })
   createdBy: Types.ObjectId;
 
-  @Prop({
-    type: String,
-    required: true,
-    enum: Object.values(OtpTypeEnum),
-  })
+  @Prop({ type: String, required: true, enum: Object.values(OtpTypeEnum) })
   type: string;
 }
 

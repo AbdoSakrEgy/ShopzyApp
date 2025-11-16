@@ -59,14 +59,10 @@ export class User implements IUser {
   })
   email: string;
 
-  @Prop({
-    type: Date,
-  })
+  @Prop({ type: Date })
   confirmEmail: Date;
 
-  @Prop({
-    type: Object,
-  })
+  @Prop({ type: Object })
   emailOtp: IOtp;
 
   @Prop({
@@ -87,22 +83,13 @@ export class User implements IUser {
   })
   provider: ProviderEnum;
 
-  @Prop({
-    type: Number,
-    minlength: 16,
-  })
+  @Prop({ type: Number, minlength: 16 })
   age: number;
 
-  @Prop({
-    type: String,
-  })
+  @Prop({ type: String })
   phone: string;
 
-  @Prop({
-    type: String,
-    enum: Object.values(RoleEnum),
-    default: RoleEnum.USER,
-  })
+  @Prop({ type: String, enum: Object.values(RoleEnum), default: RoleEnum.USER })
   role: RoleEnum;
 
   @Prop({
@@ -112,14 +99,10 @@ export class User implements IUser {
   })
   gender: GenderEnum;
 
-  @Prop({
-    type: Date,
-  })
+  @Prop({ type: Date })
   credentialsChangedAt: Date;
 
-  @Prop({
-    type: Object,
-  })
+  @Prop({ type: Object })
   passwordOtp: IOtp;
 }
 

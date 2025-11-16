@@ -1,8 +1,6 @@
 import { MongooseModule, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, Types, UpdateQuery } from 'mongoose';
 import slugify from 'slugify';
-import { OtpTypeEnum } from 'src/common/types/user.type';
-import { hash } from 'src/common/utils/security/hash.utils';
 
 @Schema({
   timestamps: true,
@@ -17,35 +15,23 @@ export class Category {
   })
   name: string;
 
-  @Prop({
-    type: String,
-    minlength: 3,
-    maxlength: 1000,
-  })
+  @Prop({ type: String, minlength: 3, maxlength: 1000 })
   description: string;
 
-  @Prop({
-    type: String,
-  })
+  @Prop({ type: String })
   slug: string;
 
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   createdBy: Types.ObjectId;
 
-  @Prop({
-    type: String,
-    required: true,
-  })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  updatedBy: Types.ObjectId;
+
+  @Prop({ type: String, required: true })
   image: string;
 
-  @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Brand' }],
-  })
-  brand: Types.ObjectId[];
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Brand' }] })
+  brands: Types.ObjectId[];
 }
 
 export const categorySchema = SchemaFactory.createForClass(Category);

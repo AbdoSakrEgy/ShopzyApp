@@ -1,4 +1,9 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateCategoryDto } from './create-category.dto';
+import z from 'zod';
 
-export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {}
+export const updateCategorySchema = z.strictObject({
+  name: z.string().min(3).max(10).optional(),
+  description: z.string().min(3).max(1000).optional(),
+  brands: z.array(z.string()).optional(),
+});
+
+export type UpdateCategoryDto = z.infer<typeof updateCategorySchema>;

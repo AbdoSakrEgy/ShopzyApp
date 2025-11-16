@@ -16,8 +16,13 @@ export class BrandService {
   ) {}
 
   // =========================== create ===========================
-  async create(parsedBody: CreateBrandDto, file: Express.Multer.File) {
-    const { name, createdBy } = parsedBody;
+  async create(
+    req: any,
+    parsedBody: CreateBrandDto,
+    file: Express.Multer.File,
+  ) {
+    const user = req.user;
+    const { name } = parsedBody;
     const image = file.filename;
     // step: check brand existence
     const checkBrand = await this.brandModel.findOne({ name });
@@ -27,8 +32,8 @@ export class BrandService {
     // step: create brand
     const brand = await this.brandModel.create({
       name,
-      createdBy,
       image,
+      createdBy: user._id,
     });
     return { message: 'Brand created successfully', result: brand };
   }
@@ -53,17 +58,19 @@ export class BrandService {
 
   // =========================== update ===========================
   async update(
+    req: any,
     id: string,
     parsedBody: UpdateBrandDto,
     file: Express.Multer.File,
   ) {
+    const user = req.user;
     // step: check brand existence
     const checkBrand = await this.brandModel.findById(id);
     if (!checkBrand) {
       return new ConflictException('Brand not exist');
     }
     // step: update brand
-    const updateData: any = { ...parsedBody };
+    const updateData: any = { ...parsedBody, updatedBy: user._id };
     if (file) {
       updateData.image = file.filename;
     }

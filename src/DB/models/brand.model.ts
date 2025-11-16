@@ -17,22 +17,16 @@ export class Brand {
   })
   name: string;
 
-  @Prop({
-    type: String,
-  })
+  @Prop({ type: String })
   slug: string;
 
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   createdBy: Types.ObjectId;
 
-  @Prop({
-    type: String,
-    required: true,
-  })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  updatedBy: Types.ObjectId;
+
+  @Prop({ type: String, required: true })
   image: string;
 }
 

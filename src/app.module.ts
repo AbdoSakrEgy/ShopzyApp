@@ -9,6 +9,7 @@ import { userSchema } from './DB/models/user.model';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { BrandModule } from './modules/brand/brand.module';
 import { CategoryModule } from './modules/category/category.module';
+import { ProductModule } from './modules/product/product.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { CategoryModule } from './modules/category/category.module';
     }),
     BrandModule,
     CategoryModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],

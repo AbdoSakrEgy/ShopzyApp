@@ -1,14 +1,9 @@
-import { IsArray, IsMongoId, IsString, Length } from 'class-validator';
-import { Types } from 'mongoose';
+import z from 'zod';
 
-export class CreateCategoryDto {
-  @IsString()
-  @Length(3, 10)
-  name: string;
+export const createCategorySchema = z.strictObject({
+  name: z.string().min(3).max(10),
+  description: z.string().min(3).max(1000).optional(),
+  brands: z.array(z.string()).optional(),
+});
 
-  @IsString()
-  image: string;
-
-  @IsMongoId()
-  createdBy: Types.ObjectId;
-}
+export type CreateCategorydDto = z.infer<typeof createCategorySchema>;
