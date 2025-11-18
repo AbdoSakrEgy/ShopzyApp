@@ -1,6 +1,6 @@
 import z from 'zod';
 
-// cartItemSchema
+// createCartSchema
 export const cartItemSchema = z.strictObject({
   productId: z.string(),
   quantity: z.number(),
