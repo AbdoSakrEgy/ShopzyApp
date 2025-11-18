@@ -24,7 +24,7 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 import { ZodValidationPipe } from 'src/common/pipes/zod.pipe';
 import { type CreateCouponDto } from './../coupon/dto/create-coupon.dto';
 
-@Controller('cart')
+@Controller('/cart')
 @UseGuards(AuthGuard)
 export class CartController {
   constructor(private readonly cartService: CartService) {}

@@ -48,20 +48,4 @@ export class CouponService {
     });
     return { message: 'Coupon created successfully', result: { coupon } };
   }
-
-  findAll() {
-    return `This action returns all coupon`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} coupon`;
-  }
-
-  update(id: number, updateCouponDto: UpdateCouponDto) {
-    return `This action updates a #${id} coupon`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} coupon`;
-  }
 }
