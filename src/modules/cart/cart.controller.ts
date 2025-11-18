@@ -22,6 +22,7 @@ import {
 import { updateCartSchema, type UpdateCartDto } from './dto/update-cart.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { ZodValidationPipe } from 'src/common/pipes/zod.pipe';
+import { type CreateCouponDto } from './../coupon/dto/create-coupon.dto';
 
 @Controller('cart')
 @UseGuards(AuthGuard)
@@ -48,5 +49,10 @@ export class CartController {
   @Delete('/remove-cart-product/:productId')
   removeCartProduct(@Req() req: any, @Param('productId') productId: string) {
     return this.cartService.removeCartProduct(req, productId);
+  }
+
+  @Post('/apply-coupon')
+  applyCoupon(@Req() req: any, @Body() body: CreateCouponDto) {
+    return this.cartService.applyCoupon(req, body);
   }
 }

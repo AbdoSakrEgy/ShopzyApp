@@ -6,6 +6,7 @@ import { User, userSchema } from 'src/DB/models/user.model';
 import { JwtService } from '@nestjs/jwt';
 import { Cart, cartSchema } from 'src/DB/models/cart.model';
 import { Product, productSchema } from 'src/DB/models/product.model';
+import { Coupon, couponSchema } from 'src/DB/models/coupon.model';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { Product, productSchema } from 'src/DB/models/product.model';
       { name: Cart.name, schema: cartSchema },
       { name: User.name, schema: userSchema },
       { name: Product.name, schema: productSchema },
+      { name: Coupon.name, schema: couponSchema },
     ]),
   ],
   controllers: [CartController],

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   AddToCartDto,
   CreateCartDto,
@@ -9,6 +13,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Cart, CartDocument } from 'src/DB/models/cart.model';
 import { Model, Types } from 'mongoose';
 import { Product, ProductDocument } from 'src/DB/models/product.model';
+import { CreateCouponDto } from '../coupon/dto/create-coupon.dto';
+import { Coupon, CouponDocument } from 'src/DB/models/coupon.model';
 
 @Injectable()
 export class CartService {
@@ -17,6 +23,8 @@ export class CartService {
     private readonly cartModel: Model<CartDocument>,
     @InjectModel(Product.name)
     private readonly productModel: Model<ProductDocument>,
+    @InjectModel(Coupon.name)
+    private readonly couponModel: Model<CouponDocument>,
   ) {}
 
   // =========================== addToCart ===========================
@@ -142,5 +150,38 @@ export class CartService {
     );
     await checkCart.save();
     return { message: 'Item removed from cart successfully', result: {} };
+  }
+
+  // =========================== applyCoupon ===========================
+  async applyCoupon(req: any, body: CreateCouponDto) {
+    const user = req.user;
+    const { code } = body;
+    // step: check cart existence
+    const checkCart = await this.cartModel.findOne({ user });
+    if (!checkCart) {
+      throw new NotFoundException('Cart not found');
+    }
+    // step: check coupon existence
+    const checkCoupon = await this.couponModel.findOne({ code });
+    if (!checkCoupon) {
+      throw new NotFoundException('Coupon not found');
+    }
+    // step: check coupon expire date
+    const now = new Date();
+    if (checkCoupon.expiresAt < now) {
+      throw new BadRequestException('Coupon has expired');
+    }
+    // step: apply coupon
+    const discountAmount =
+      (checkCart.totalPrice * checkCoupon.discountPrecent) / 100;
+    const totalAfterDiscount = checkCart.totalPrice - discountAmount;
+    checkCart.coupon = checkCoupon._id;
+    checkCart.discount = checkCoupon.discountPrecent;
+    checkCart.totalPriceAfterDiscount = totalAfterDiscount;
+    await checkCart.save();
+    return {
+      message: 'Coupon applied successfully',
+      result: { cart: checkCart },
+    };
   }
 }
