@@ -1,0 +1,55 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+  UsePipes,
+} from '@nestjs/common';
+import { CartService } from './cart.service';
+import {
+  type AddToCartDto,
+  addToCartSchema,
+  createCartSchema,
+  type CreateCartDto,
+  updateCartProductSchema,
+  type UpdateCartProductDto,
+} from './dto/create-cart.dto';
+import { updateCartSchema, type UpdateCartDto } from './dto/update-cart.dto';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { ZodValidationPipe } from 'src/common/pipes/zod.pipe';
+
+@Controller('cart')
+export class CartController {
+  constructor(private readonly cartService: CartService) {}
+
+  @Post('/add-to-cart')
+  @UseGuards(AuthGuard)
+  @UsePipes(new ZodValidationPipe(addToCartSchema))
+  create(@Req() req: any, @Body() body: AddToCartDto) {
+    return this.cartService.addToCart(req, body);
+  }
+
+  @Get('/get-cart')
+  @UseGuards(AuthGuard)
+  findOne(@Req() req: any) {
+    return this.cartService.getCart(req);
+  }
+
+  @Patch('/update-cart-product')
+  @UseGuards(AuthGuard)
+  @UsePipes(new ZodValidationPipe(updateCartProductSchema))
+  updateCartProduct(@Req() req: any, @Body() body: UpdateCartProductDto) {
+    return this.cartService.updateCartProduct(req, body);
+  }
+
+  @Delete('/remove-cart-product/:productId')
+  @UseGuards(AuthGuard)
+  removeCartProduct(@Req() req: any, @Param('productId') productId: string) {
+    return this.cartService.removeCartProduct(req, productId);
+  }
+}

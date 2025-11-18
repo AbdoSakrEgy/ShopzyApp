@@ -17,11 +17,13 @@ import {
   type CreateProductDto,
   createProductSchema,
 } from './dto/create-product.dto';
-import { type UpdateProductDto } from './dto/update-product.dto';
+import {
+  updateProductSchema,
+  type UpdateProductDto,
+} from './dto/update-product.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'src/common/utils/multer/multer.options';
-import { updateCategorySchema } from '../category/dto/update-category.dto';
 
 @Controller('/product')
 export class ProductController {
@@ -63,7 +65,7 @@ export class ProductController {
     @Body() body: UpdateProductDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
-    const parsedBody = updateCategorySchema.parse(body);
+    const parsedBody = updateProductSchema.parse(body);
     return this.productService.update(req, id, parsedBody, files);
   }
 

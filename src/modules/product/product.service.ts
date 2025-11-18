@@ -1,8 +1,5 @@
-import { BrandDocument, BrandModel } from './../../DB/models/brand.model';
-import {
-  CategoryDocument,
-  CategoryModel,
-} from './../../DB/models/category.model';
+import { BrandDocument } from './../../DB/models/brand.model';
+import { CategoryDocument } from './../../DB/models/category.model';
 import {
   ConflictException,
   Injectable,
@@ -22,9 +19,9 @@ export class ProductService {
     @InjectModel(Product.name)
     private readonly productModel: Model<ProductDocument>,
     @InjectModel(Category.name)
-    private readonly CategoryModel: Model<CategoryDocument>,
+    private readonly categoryModel: Model<CategoryDocument>,
     @InjectModel(Brand.name)
-    private readonly BrandModel: Model<BrandDocument>,
+    private readonly brandModel: Model<BrandDocument>,
   ) {}
 
   // =========================== create ===========================
@@ -36,7 +33,7 @@ export class ProductService {
     const user = req.user;
     // step: check category existence
     if (parsedBody.category) {
-      const checkCategory = await this.CategoryModel.findById(
+      const checkCategory = await this.categoryModel.findById(
         parsedBody.category,
       );
       if (!checkCategory) {
@@ -45,7 +42,7 @@ export class ProductService {
     }
     // step: check bran existence
     if (parsedBody.brand) {
-      const checkBrand = await this.BrandModel.findById(parsedBody.brand);
+      const checkBrand = await this.brandModel.findById(parsedBody.brand);
       if (!checkBrand) {
         return new NotFoundException('Brand not found');
       }
@@ -96,9 +93,6 @@ export class ProductService {
       for (const file of files) {
         images?.push(file.filename);
       }
-    }
-    if (files) {
-      updateData.images = images;
     }
     const updatedProduct = await this.productModel.updateOne(
       { _id: id },

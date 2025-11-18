@@ -1,8 +1,6 @@
 import { MongooseModule, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, Types, UpdateQuery } from 'mongoose';
 import slugify from 'slugify';
-import { OtpTypeEnum } from 'src/common/types/user.type';
-import { hash } from 'src/common/utils/security/hash.utils';
 
 @Schema({
   timestamps: true,
