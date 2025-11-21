@@ -114,4 +114,7 @@ export class ProductService {
     await this.productModel.deleteOne({ _id: id });
     return { message: 'Product removed successfully' };
   }
+
+  // =========================== testRedisCach ===========================
+  async testRedisCach() {}
 }
