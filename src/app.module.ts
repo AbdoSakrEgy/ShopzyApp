@@ -14,6 +14,7 @@ import { CartModule } from './modules/cart/cart.module';
 import { CouponModule } from './modules/coupon/coupon.module';
 import { OrderModule } from './modules/order/order.module';
 import { PaymentService } from './common/utils/payment/payment.service';
+import { GatewayModule } from './common/gateway/gateway.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { PaymentService } from './common/utils/payment/payment.service';
     CartModule,
     CouponModule,
     OrderModule,
+    GatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService, PaymentService],
