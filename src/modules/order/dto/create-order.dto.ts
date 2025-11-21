@@ -1,8 +1,10 @@
+import { PaymentMethodEnum } from 'src/common/types/order.type';
 import z from 'zod';
 
 // createOrderSchema
 const phoneE164Regex = /^\+?[1-9]\d{6,14}$/;
 export const createOrderSchema = z.strictObject({
+  paymentMethod: z.enum(Object.values(PaymentMethodEnum)),
   address: z.string().min(1, 'Address is required'),
   phone: z
     .string()

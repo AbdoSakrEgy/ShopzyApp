@@ -29,7 +29,7 @@ export class CouponService {
     const validCoupons = [
       {
         code: 'VADA-DADF-2Q-D312',
-        discountPrecent: 15,
+        discountPrecent: 36,
         expiresAt: new Date('12-18-2025'),
       },
     ];

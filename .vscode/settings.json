@@ -1,0 +1,7 @@
+{
+  "geminicodeassist.inlineSuggestions.enableAuto": false,
+  "editor.inlineSuggest.enabled": false,
+  "editor.inlineSuggest.suppressInSnippetMode": false,
+  "editor.screenReaderAnnounceInlineSuggestion": false,
+  "editor.inlineSuggest.syntaxHighlightingEnabled": false
+}

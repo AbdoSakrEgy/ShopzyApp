@@ -24,18 +24,13 @@ export class OrderController {
     return this.orderService.create(req, body);
   }
 
-  @Get('/find-one/:orderId')
-  findOne(@Param('orderId') orderId: string) {
-    return this.orderService.findOne(orderId);
+  @Post('/pay-with-stripe/:orderId')
+  payWithStripe(@Req() req: any, @Param('orderId') orderId: string) {
+    return this.orderService.payWithStripe(req, orderId);
   }
 
-  @Patch('/update/:orderId')
-  update(@Param('orderId') orderId: string, @Body() body: UpdateOrderDto) {
-    return this.orderService.update(orderId, body);
-  }
-
-  @Delete('/cancle/:orderId')
-  cancle(@Param('orderId') orderId: string) {
-    return this.orderService.cancle(orderId);
+  @Post('/refund-with-stripe/:orderId')
+  refundWithStripe(@Req() req: any, @Param('orderId') orderId: string) {
+    return this.orderService.refundWithStripe(req, orderId);
   }
 }

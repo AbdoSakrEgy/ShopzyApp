@@ -39,9 +39,9 @@ export class CartService {
     // step: check user cart existence
     const price = checkProduct.salePrice;
     const total = price * quantity;
-    // step: cart not exist
-    const checkCart = await this.cartModel.findOne({ user: user._id });
-    if (!checkCart) {
+    // step: if cart not exist
+    const cart = await this.cartModel.findOne({ user: user._id });
+    if (!cart) {
       const cart = await this.cartModel.create({
         user,
         items: [{ productId, quantity, price, total }],
@@ -49,33 +49,27 @@ export class CartService {
       });
       return { message: 'Items added successfully', result: { cart } };
     }
-    // step: cart is exist
+    // step: if cart exist
     // step: check item existence
-    const itemIndex = checkCart.items.findIndex(
+    const itemIndex = cart.items.findIndex(
       (item) => item.productId.toString() == productId,
     );
     if (itemIndex > -1) {
-      checkCart.items[itemIndex].quantity += quantity;
-      checkCart.items[itemIndex].total =
-        checkCart.items[itemIndex].quantity * checkCart.items[itemIndex].price;
-      checkCart.totalPrice = checkCart.items.reduce(
-        (sum, item) => sum + item.total,
-        0,
-      );
+      cart.items[itemIndex].quantity += quantity;
+      cart.items[itemIndex].total =
+        cart.items[itemIndex].quantity * cart.items[itemIndex].price;
+      cart.totalPrice = cart.items.reduce((sum, item) => sum + item.total, 0);
     } else {
-      checkCart.items.push({
+      cart.items.push({
         productId: new Types.ObjectId(productId),
         quantity,
         price,
         total,
       });
-      checkCart.totalPrice = checkCart.items.reduce(
-        (sum, item) => sum + item.total,
-        0,
-      );
+      cart.totalPrice = cart.items.reduce((sum, item) => sum + item.total, 0);
     }
-    await checkCart.save();
-    return { message: 'Items added successfully', result: { cart: checkCart } };
+    await cart.save();
+    return { message: 'Items added successfully', result: { cart: cart } };
   }
 
   // =========================== getCart ===========================

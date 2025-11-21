@@ -6,6 +6,7 @@ import { Order, orderSchema } from 'src/DB/models/order.model';
 import { User, userSchema } from 'src/DB/models/user.model';
 import { JwtService } from '@nestjs/jwt';
 import { Cart, cartSchema } from 'src/DB/models/cart.model';
+import { PaymentService } from 'src/common/utils/payment/payment.service';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { Cart, cartSchema } from 'src/DB/models/cart.model';
     ]),
   ],
   controllers: [OrderController],
-  providers: [OrderService, JwtService],
+  providers: [OrderService, JwtService, PaymentService],
 })
 export class OrderModule {}

@@ -13,6 +13,7 @@ import { ProductModule } from './modules/product/product.module';
 import { CartModule } from './modules/cart/cart.module';
 import { CouponModule } from './modules/coupon/coupon.module';
 import { OrderModule } from './modules/order/order.module';
+import { PaymentService } from './common/utils/payment/payment.service';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { OrderModule } from './modules/order/order.module';
     OrderModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, PaymentService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

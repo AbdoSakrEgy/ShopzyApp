@@ -54,6 +54,21 @@ export class Order {
     required: true,
   })
   phone: string;
+
+  @Prop({
+    type: String,
+  })
+  paymentIntentId: string;
+
+  @Prop({
+    type: String,
+  })
+  refundId: string;
+
+  @Prop({
+    type: Date,
+  })
+  refundedAt: Date;
 }
 
 export const orderSchema = SchemaFactory.createForClass(Order);
