@@ -1,4 +1,4 @@
-# Shopzy E-commerce API
+# Shopzy
 
 A full-stack e-commerce application built with Node.js, NestJS, and TypeScript. Features include user authentication, product management, cart handling, and a complete order workflow with clean, scalable architecture.
 
