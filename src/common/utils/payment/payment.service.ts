@@ -5,13 +5,13 @@ import Stripe from 'stripe';
 export class PaymentService {
   private stripe: Stripe;
   constructor() {
-    this.stripe = new Stripe(process.env.STIPE_SECRET_KEY as string);
+    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
   }
-
+  // Option1 (CheckoutSession)
   // createCheckoutSession
   async createCheckoutSession({
     success_url = process.env.SUCCESS_URL as string,
-    cancel_url = process.env.CANCLE_URL as string,
+    cancel_url = process.env.CANCEL_URL as string,
     mode = 'payment',
     discounts = [],
     metadata = {},
@@ -36,6 +36,17 @@ export class PaymentService {
     return coupon;
   }
 
+  // createRefund
+  async createRefund(id: string) {
+    const paymentIntent = await this.retrievePaymentIntent(id);
+    if (!paymentIntent) throw new NotFoundException('Invalid paymentIntent id');
+    const refund = await this.stripe.refunds.create({
+      payment_intent: id,
+    });
+    return refund;
+  }
+
+  // Option2 (PaymentIntent)
   // createPaymentMethod
   async createPaymentMethod(data: Stripe.PaymentMethodCreateParams) {
     const paymentMethod = await this.stripe.paymentMethods.create(data);
@@ -57,14 +68,5 @@ export class PaymentService {
     if (!paymentIntent) throw new NotFoundException('Invalid paymentIntent id');
     const confirmPaymentIntent = await this.stripe.paymentIntents.confirm(id);
     return confirmPaymentIntent;
-  }
-  // createRefund
-  async createRefund(id: string) {
-    const paymentIntent = await this.retrievePaymentIntent(id);
-    if (!paymentIntent) throw new NotFoundException('Invalid paymentIntent id');
-    const refund = await this.stripe.refunds.create({
-      payment_intent: id,
-    });
-    return refund;
   }
 }

@@ -8,6 +8,7 @@ import { Cart, CartDocument } from 'src/DB/models/cart.model';
 import {
   OrderStatusEnum,
   PaymentMethodEnum,
+  PaymentStatus,
 } from 'src/common/types/order.type';
 import { UserDocument } from 'src/DB/models/user.model';
 import { PaymentService } from 'src/common/utils/payment/payment.service';
@@ -29,7 +30,7 @@ export class OrderService {
     const { address, phone, paymentMethod } = body;
     const cart = await this.cartModel.findOne({ user }).populate('coupon');
     // step: check cart existence
-    if (!cart || cart?.items.length < 0) {
+    if (!cart || cart?.items.length == 0) {
       throw new NotFoundException('Cart is empty');
     }
     // step: create order
@@ -37,7 +38,7 @@ export class OrderService {
       user,
       items: cart.items,
       totalPrice: cart.totalPrice,
-      coupon: cart.coupon._id,
+      coupon: cart.coupon?._id,
       discount: cart.discount || 0,
       totalPriceAfterDiscount: cart.totalPriceAfterDiscount || cart.totalPrice,
       status: OrderStatusEnum.PLACED,
@@ -62,23 +63,22 @@ export class OrderService {
         paymentMethod: PaymentMethodEnum.CARD,
       })
       .populate('user')
-      .populate('coupon');
+      .populate('coupon')
+      .populate('items.productId');
     if (!order) throw new NotFoundException('Order not found');
     // step: collect createCheckoutSession data
-    const amount = order.totalPriceAfterDiscount ?? order.totalPrice ?? 0;
-    const line_items = [
-      {
+    const line_items = order.items.map((item) => {
+      return {
         price_data: {
           currency: 'egp',
           product_data: {
-            name: `Order ${(order.user as unknown as UserDocument).firstName}`,
-            description: `Payment for order on address ${order.address}`,
+            name: (item as any).productId.name,
           },
-          unit_amount: amount * 100,
+          unit_amount: (item as any).productId.salePrice * 100,
         },
-        quantity: 1,
-      },
-    ];
+        quantity: (item as any).quantity,
+      };
+    });
     const discounts: Stripe.Checkout.SessionCreateParams.Discount[] = [];
     if (order.discount) {
       const coupon = await this.paymentService.createCoupon({
@@ -97,23 +97,28 @@ export class OrderService {
       discounts,
       metadata: { orderId: orderId.toString() },
     });
-    // createPaymentIntent
-    const paymentMethod = await this.paymentService.createPaymentMethod({
-      type: 'card',
-      card: { token: 'tok_visa' },
-    });
-    // createPaymentIntent
-    const paymentIntent = await this.paymentService.createPaymentIntent({
-      amount: order.totalPriceAfterDiscount * 100,
-      currency: 'egp',
-      payment_method: paymentMethod.id,
-      payment_method_types: [PaymentMethodEnum.CARD],
-    });
-    order.paymentIntentId = paymentIntent.id;
+    // Store the checkout session ID for reference
+    order.checkoutSessionId = checkoutSession.id;
     await order.save();
-    // confirmPaymentIntent
-    await this.paymentService.confirmPaymentIntent(paymentIntent.id);
     return checkoutSession;
+  }
+
+  // =========================== webHookWithStripe ===========================
+  async webHookWithStripe(body: any) {
+    const { orderId } = body.data.object.metadata;
+    // step: check order existence
+    const order = await this.orderModel.findOneAndUpdate(
+      { _id: orderId },
+      {
+        $set: {
+          paymentStatus: PaymentStatus.PAID,
+          paymentIntentId: body.data.object.payment_intent,
+        },
+      },
+    );
+    if (!order) throw new NotFoundException('Order not found');
+    console.log({ order });
+    return order;
   }
 
   // =========================== refundWithStripe ===========================
@@ -143,6 +148,7 @@ export class OrderService {
       { _id: orderId },
       {
         status: OrderStatusEnum.CANCELLED,
+        paymentStatus: PaymentStatus.REFUND,
         refundId: refund.id,
         refundedAt: new Date(),
         $unset: { paymentIntentId: true },
@@ -155,4 +161,39 @@ export class OrderService {
       result: { order: updatedOrder },
     };
   }
+
+  // =========================== payWithStripeOption2 ===========================
+  // async payWithStripeOption2(req: any, orderId: string) {
+  //   const user = req.user;
+  //   // step: check order existence
+  //   const order = await this.orderModel
+  //     .findOne({
+  //       _id: orderId,
+  //       user: user._id,
+  //       status: OrderStatusEnum.PLACED,
+  //       paymentMethod: PaymentMethodEnum.CARD,
+  //     })
+  //     .populate('user')
+  //     .populate('coupon');
+  //   if (!order) throw new NotFoundException('Order not found');
+  //   // step: apply stripe services
+  //   // createPaymentIntent
+  //   const paymentIntent = await this.paymentService.createPaymentIntent({
+  //     amount: order.totalPriceAfterDiscount * 100,
+  //     currency: 'egp',
+  //     automatic_payment_methods: { enabled: true },
+  //     metadata: { orderId },
+  //   });
+  //   order.paymentIntentId = paymentIntent.id;
+  //   await order.save();
+  //   // ===FrontEnd===
+  //   // // createPaymentMethod
+  //   // const paymentMethod = await this.paymentService.createPaymentMethod({
+  //   //   type: 'card',
+  //   //   card: { token: 'tok_visa' }, // for test mode
+  //   // });
+  //   // // confirmPaymentIntent
+  //   // const { error } = await stripe.confirmCardPayment(clientSecret);
+  //   return { clientSecret: paymentIntent.client_secret };
+  // }
 }

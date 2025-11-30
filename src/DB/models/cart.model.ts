@@ -1,6 +1,22 @@
 import { MongooseModule, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, Types, UpdateQuery } from 'mongoose';
 
+@Schema({ timestamps: true })
+export class CartProduct {
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true,
+  })
+  productId: Types.ObjectId;
+  @Prop({ type: Number, required: true })
+  quantity: number;
+  @Prop({ type: Number, required: true })
+  price: number;
+  @Prop({ type: Number, required: true })
+  total: number;
+}
+
 @Schema({
   timestamps: true,
 })
@@ -13,24 +29,8 @@ export class Cart {
   })
   user: Types.ObjectId;
 
-  @Prop([
-    {
-      productId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-        required: true,
-      },
-      quantity: { type: Number, required: true },
-      price: { type: Number, required: true },
-      total: { type: Number, required: true },
-    },
-  ])
-  items: {
-    productId: Types.ObjectId;
-    quantity: number;
-    price: number;
-    total: number;
-  }[];
+  @Prop({ type: [CartProduct], default: [] })
+  items: CartProduct[];
 
   @Prop({ type: Number, required: true })
   totalPrice: number;

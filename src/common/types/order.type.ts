@@ -10,3 +10,9 @@ export enum PaymentMethodEnum {
   CASH = 'cash',
   CARD = 'card',
 }
+
+export enum PaymentStatus {
+  PENDING = 'pending',
+  PAID = 'paid',
+  REFUND = 'refund',
+}

@@ -1,26 +1,24 @@
 import { MongooseModule, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, Types, UpdateQuery } from 'mongoose';
-import slugify from 'slugify';
 import {
   OrderStatusEnum,
   PaymentMethodEnum,
+  PaymentStatus,
 } from 'src/common/types/order.type';
-import { object } from 'zod';
+import { CartProduct } from './cart.model';
 
-@Schema({
-  timestamps: true,
-})
+@Schema({ timestamps: true })
 export class Order {
   @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' })
   user: Types.ObjectId;
 
-  @Prop({ type: object, required: true })
-  items: object[];
+  @Prop({ type: [CartProduct], default: [] })
+  items: CartProduct[];
 
   @Prop({ type: Number, required: true })
   totalPrice: number;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Cart' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Coupon' })
   coupon: Types.ObjectId;
 
   @Prop({ type: Number, default: 0, min: 0, max: 100 })
@@ -45,6 +43,13 @@ export class Order {
 
   @Prop({
     type: String,
+    enum: Object.values(PaymentStatus),
+    default: PaymentStatus.PENDING,
+  })
+  paymentStatus: string;
+
+  @Prop({
+    type: String,
     required: true,
   })
   address: string;
@@ -54,6 +59,11 @@ export class Order {
     required: true,
   })
   phone: string;
+
+  @Prop({
+    type: String,
+  })
+  checkoutSessionId: string;
 
   @Prop({
     type: String,
